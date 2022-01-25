@@ -5,7 +5,7 @@ import sys
 import time
 
 MAX_BYTES = 65535
-PORT = 1069  # RND Port
+PORT = 1070
 HOST = '127.0.0.1'
 
 
@@ -15,8 +15,12 @@ def client(host: str, port: int, msg: str = 'Hello World!') -> None:
     for x in range(10):
         time.sleep(random.random())
         sck.sendto(msg, (host, port))
-        data, address = sck.recvfrom(MAX_BYTES)
-        print(f'{x+1}. Server replied: {data.decode()} {datetime.datetime.now()}')
+        sck.settimeout(1.0)
+        try:
+            data, address = sck.recvfrom(MAX_BYTES)
+            print(f'{x + 1}. Server replied: {data.decode()} {datetime.datetime.now()}')
+        except socket.timeout:
+            raise RuntimeError('Server is down!')
 
 
 if __name__ == '__main__':
