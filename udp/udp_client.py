@@ -1,27 +1,33 @@
 import datetime
 import random
 import socket
-import sys
 import time
 
 MAX_BYTES = 65535
-PORT = 1070
+PORT = 1069
 HOST = '127.0.0.1'
 
 
 def client(host: str, port: int, msg: str = 'Hello World!') -> None:
     sck = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    if type(msg) is not str:
+        msg = str(msg)
     msg = bytes(msg, 'utf-8')
-    for x in range(10):
+    waiting_time = 0.5
+    while True:
         time.sleep(random.random())
         sck.sendto(msg, (host, port))
-        sck.settimeout(1.0)
+        sck.settimeout(waiting_time)
         try:
             data, address = sck.recvfrom(MAX_BYTES)
-            print(f'{x + 1}. Server replied: {data.decode()} {datetime.datetime.now()}')
+            print(f'Server replied: {data.decode()} {datetime.datetime.now()}')
         except socket.timeout:
-            raise RuntimeError('Server is down!')
-
+            waiting_time *= 2
+            if waiting_time > 2.0:
+                raise RuntimeError('Server is down!')
+        else:
+            break
 
 if __name__ == '__main__':
-    client(host=HOST, port=PORT)
+    for x in range(10):
+        client(host=HOST, port=PORT, msg=random.random())
