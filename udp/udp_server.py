@@ -7,23 +7,21 @@ import sys
 
 MAX_BYTES = 65535
 PORT = 1069  # RND Port
-HOST = '' # Listen on all
+HOST = ''  # Listen on all
 
 
 def server(address: tuple) -> None:
-    sck = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sck.bind(address)
-    print('Listing at {}'.format((sck.getsockname())))
-    try:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sck:
+        sck.bind(address)
+        print('Listing at {}'.format((sck.getsockname())))
+        total_requests = 0
         while True:
             data, address = sck.recvfrom(MAX_BYTES)
-            print(f'Receiving data from client {address} at ' + str(datetime.datetime.now()) )
+            total_requests += 1
+            print(f'Receiving data from client {address} at ' + str(datetime.datetime.now()))
             print(f'Data: {data.decode()}')
+            print(f'Total requests: {total_requests}')
             sck.sendto(b'Thank you for your request!', address)
-
-    except KeyboardInterrupt:
-        print('Keyboard Interrupt')
-        sys.exit(0)
 
 
 if __name__ == '__main__':
