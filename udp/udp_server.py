@@ -6,8 +6,9 @@ import datetime
 import sys
 
 MAX_BYTES = 65535
-PORT = 1069  # RND Port
-HOST = ''  # Listen on all
+PORT = 5683 # RND Port
+#HOST = '127.0.0.1'  # Listen on all
+HOST = 'localhost'
 
 
 def server(address: tuple) -> None:
